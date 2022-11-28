@@ -1,28 +1,26 @@
-import streamlit as sl
-import os
+import streamlit as st
 import functions
 
-if not os.path.exists('todos.txt'):
-    with open('todos.txt', 'w'):
-        pass
+todos = functions.get_todos()
 
-todos = functions.file_reader()
+
 def add_todo():
-    todo = sl.session_state['new_todo'] + '\n'
+    todo = st.session_state["new_todo"] + "\n"
     todos.append(todo)
-    functions.file_writter(todos)
-    sl.session_state['new_todo'] = ''
+    functions.write_todos(todos)
 
-sl.title('My To-Do App')
-sl.subheader('This is my To-Do App')
-sl.text('This is the list of the things that I need to do:')
 
-for todo in todos:
-    checkbox = sl.checkbox(todo, key=todo)
+st.title("My Todo App")
+st.subheader("This is my todo app.")
+st.write("This app is to increase your productivity.")
+
+for index, todo in enumerate(todos):
+    checkbox = st.checkbox(todo, key=todo)
     if checkbox:
-        todos.remove(todo)
-        functions.file_writter(todos)
-        del sl.session_state[todo]
-        sl.experimental_rerun()
+        todos.pop(index)
+        functions.write_todos(todos)
+        del st.session_state[todo]
+        st.experimental_rerun()
 
-sl.text_input(label='', placeholder='Add new todo...', on_change=add_todo, key='new_todo')
+st.text_input(label="", placeholder="Add new todo...",
+              on_change=add_todo, key='new_todo')
